@@ -1,1 +1,107 @@
+#include <cstdio>
+#include <algorithm>
+using namespace std;
 
+struct Fraction {
+	long long up, down;
+};
+
+long long gcd(long long a, long long b) {
+	return b == 0 ? a : gcd(b, a % b);
+}
+
+Fraction reduction(Fraction a) {
+	if (a.down < 0) {
+		a.up = -a.up;
+		a.down = -a.down;
+	}
+	if (a.up == 0) {
+		a.down = 1;
+	}
+	else {
+		int d = gcd(abs(a.up), abs(a.down));
+		a.up /= d;
+		a.down /= d;
+	}
+	return a;
+}
+
+Fraction sum(Fraction a, Fraction b) {
+	Fraction result;
+	result.up = a.up * b.down + b.up * a.down;
+	result.down = a.down * b.down;
+	return reduction(result);
+}
+
+Fraction difference(Fraction a, Fraction b) {
+	Fraction result;
+	result.up = a.up * b.down - b.up * a.down;
+	result.down = a.down * b.down;
+	return reduction(result);
+}
+
+Fraction product(Fraction a, Fraction b) {
+	Fraction result;
+	result.up = a.up * b.up;
+	result.down = a.down * b.down;
+	return reduction(result);
+}
+
+Fraction quotient(Fraction a, Fraction b) {
+	Fraction result;
+	result.up = a.up * b.down;
+	result.down = a.down * b.up;
+	return reduction(result);
+}
+
+void showResult(Fraction a) {
+	a = reduction(a);
+	if (a.up < 0) printf("(");
+	if (a.down == 1) printf("%lld", a.up);
+	else if(abs(a.up) > a.down) {
+		printf("%lld %lld/%lld", a.up / a.down, abs(a.up % a.down), a.down);
+	}
+	else {
+		printf("%lld/%lld", a.up, a.down);
+	}
+	if (a.up < 0) printf(")");
+}
+
+int main() {
+	Fraction a, b;
+	scanf("%lld/%lld %lld/%lld", &a.up, &a.down, &b.up, &b.down);
+
+	Fraction ans1 = sum(a, b);
+	showResult(a);
+	printf(" + ");
+	showResult(b);
+	printf(" = ");
+	showResult(ans1);
+	printf("\n");
+
+	Fraction ans2 = difference(a, b);
+	showResult(a);
+	printf(" - ");
+	showResult(b);
+	printf(" = ");
+	showResult(ans2);
+	printf("\n");
+
+	Fraction ans3 = product(a, b);
+	showResult(a);
+	printf(" * ");
+	showResult(b);
+	printf(" = ");
+	showResult(ans3);
+	printf("\n");
+
+	Fraction ans4 = quotient(a, b);
+	showResult(a);
+	printf(" / ");
+	showResult(b);
+	printf(" = ");
+	if (b.up == 0) printf("Inf");
+	else showResult(ans4);
+	printf("\n");
+	return 0;
+}
