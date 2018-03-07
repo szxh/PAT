@@ -1,0 +1,52 @@
+/判断MSize是否为素数，不是，则while循环加1直到为素数，停止循环
+//将TSize赋值，在读入N个数的同时为hash表赋值，若冲突，到i的平方处继续试探
+//在成功赋值的同时打印出来，最后一位无空格
+
+#include <cstdio>
+#include <cmath>
+const int maxn = 11111;
+bool hashTable[maxn] = { 0 };
+
+bool isPrime(int n) {
+	if (n <= 1) return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2;i <= sqr;i++) {
+		if (n % i == 0) return false;
+	}
+	return true;
+}
+
+int main() {
+	int n, TSize;
+	scanf("%d %d", &TSize, &n);
+	while (isPrime(TSize) == false) {
+		TSize++;
+	}
+	int t, a;
+	for (int i = 0;i < n;i++) {
+		scanf("%d", &a);
+		t = a % TSize;
+		if (hashTable[t] == false) {
+			hashTable[t] = true;
+			printf("%d", t);
+			if (i != n - 1) printf(" ");
+		}
+		else {
+			int step;
+			for (step = 1;step < TSize;step++) {
+				t = (a + step * step) % TSize;
+				if (hashTable[t] == false) {
+					hashTable[t] = true;
+					printf("%d", t);
+					if (i != n - 1) printf(" ");
+					break;
+				}
+			}
+			if (step >= TSize) {
+				printf("-");
+				if (i != n - 1) printf(" ");
+			}
+		}
+	}
+	return 0;
+}
