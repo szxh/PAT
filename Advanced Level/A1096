@@ -1,0 +1,36 @@
+//若存在大于开根号的因子，因为优先输出小的因子，那么在此之前已经遍历过小的因子
+
+#include <cstdio>
+#include <cmath>
+
+int main() {
+	int n;
+	scanf("%d", &n);
+	int sqr = (int)sqrt(1.0 * n);
+	int ansI, ansLen = 0;
+	for (int i = 2;i <= sqr;i++) {
+		long long a = 1;
+		long long j = i;
+		while (1) {
+			a *= j;
+			if (n % a != 0) break;
+			if (j - i + 1 > ansLen) {
+				ansLen = j - i + 1;
+				ansI = i;
+			}
+			j++;
+		}
+	}
+	if (ansLen == 0) {
+		printf("1\n%d\n", n);
+	}
+	else {
+		printf("%d\n", ansLen);
+		for (int i = 0;i < ansLen;i++) {
+			printf("%d", ansI);
+			ansI++;
+			if (i != ansLen - 1) printf("*");
+		}
+	}
+	return 0;
+}
