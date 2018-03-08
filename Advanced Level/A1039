@@ -1,0 +1,43 @@
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int maxn = 26 * 26 * 26 * 10 + 10;
+vector<int> course[maxn];
+
+int getID(char str[]) {
+	int id = 0;
+	for (int i = 0;i < 3;i++) {
+		id = id * 26 + (str[i] - 'A');
+	}
+	id = id * 10 + (str[3] - '0');
+	return id;
+}
+
+int main() {
+	int n, k;
+	scanf("%d %d", &n, &k);
+	char name[5];
+	int index, num;
+	for (int i = 0;i < k;i++) {
+		scanf("%d %d", &index, &num);
+		for (int j = 0;j < num;j++) {
+			scanf("%s", name);
+			int id = getID(name);
+			course[id].push_back(index);
+		}
+	}
+	for (int i = 0;i < n;i++) {
+		scanf("%s", name);
+		int id = getID(name);
+		sort(course[id].begin(), course[id].end());
+		printf("%s %d", name, course[id].size());
+		for (int j = 0;j < course[id].size();j++) {
+			printf(" %d", course[id][j]);
+		}
+		printf("\n");
+	}
+	return 0;
+}
