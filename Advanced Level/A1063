@@ -1,0 +1,33 @@
+#include <cstdio>
+#include <set>
+using namespace std;
+const int maxn = 51;
+set<int> st[maxn];
+
+void compare(int x, int y) {
+	int totalnum = st[y].size(), samenum = 0;
+	for (set<int>::iterator it = st[x].begin();it != st[x].end();it++) {
+		if (st[y].find(*it) != st[y].end()) samenum++;
+		else totalnum++;
+	}
+	printf("%.1f%%\n", 100.0 * samenum / totalnum);
+}
+
+int main() {
+	int n, k, num;
+	scanf("%d", &n);
+	for (int i = 0;i < n;i++) {
+		scanf("%d", &k);
+		for (int j = 0;j < k;j++) {
+			scanf("%d", &num);
+			st[i].insert(num);
+		}
+	}
+	int m, a, b;
+	scanf("%d", &m);
+	for (int i = 0;i < m;i++) {
+		scanf("%d %d", &a, &b);
+		compare(a - 1, b - 1);
+	}
+	return 0;
+}
