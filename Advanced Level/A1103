@@ -1,0 +1,56 @@
+//从n中找出符合条件的底数，保存在数组中，下标为数字，值为p次方
+//使用DFS解决分岔问题，此题有选择此底数和不选择此底数两个选择
+//DFS参数选择，index底数，nowk已选择底数个数，sum总和，facsum底数总和
+
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int n, k, p, maxfacsum = -1;
+vector<int> temp, ans;
+int fac[25];
+void DFS(int index, int nowk, int sum, int facsum) {
+	if (sum == n && nowk == k) {
+		if (facsum > maxfacsum) {
+			maxfacsum = facsum;
+			ans = temp;
+		}
+		return;
+	}
+	if (sum > n || nowk > k) return;
+	if (index >= 1) {
+		temp.push_back(index);
+		DFS(index, nowk + 1, sum + fac[index], facsum + index);
+		temp.pop_back();
+		DFS(index - 1, nowk, sum, facsum);
+	}
+}
+
+int main() {
+	for (int i = 0;i < 25;i++) {
+		fac[i] = 1;
+	}
+	int flag = true;
+	int index;
+	scanf("%d%d%d", &n, &k, &p);
+	for (int i = 0;i < 22;i++) {
+		for (int j = 0;j < p;j++) {
+			if (fac[i] * i > n) {
+				index = i - 1;
+				flag = false;
+				break;
+			}
+			fac[i] *= i;
+		}
+		if (flag == false) break;
+	}
+	DFS(index, 0, 0, 0);
+	if (maxfacsum == -1) printf("Impossible\n");
+	else {
+		printf("%d = %d^%d", n, ans[0], p);
+		for (int i = 1;i < k;i++) {
+			printf(" + %d^%d", ans[i], p);
+		}
+	}
+	return 0;
+}
