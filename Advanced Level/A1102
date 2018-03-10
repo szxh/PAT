@@ -1,0 +1,82 @@
+#include <cstdio>
+#include <algorithm>
+#include <queue>
+using namespace std;
+const int maxn = 12;
+struct Node {
+	int left;
+	int right;
+}node[maxn];
+int n;
+bool notRoot[10] = { false };
+
+int strToNum(char c) {
+	if (c >= '0' && c <= '9') {
+		notRoot[c - '0'] = true;
+		return c - '0';
+	}
+	else return -1;
+}
+
+int find() {
+	for (int i = 0;i < n;i++) {
+		if (notRoot[i] == false) {
+			return i;
+		}
+	}
+}
+
+void postOrder(int root) {
+	if (root == -1) {
+		return;
+	}
+	postOrder(node[root].left);
+	postOrder(node[root].right);
+	swap(node[root].left, node[root].right);
+}
+int num = 0;
+
+void print(int id) {
+	printf("%d", id);
+	num++;
+	if (num < n) printf(" ");
+	if (num == n) printf("\n");
+}
+
+void BFS(int root) {
+	queue<int> q;
+	q.push(root);
+	while (!q.empty()) {
+		int top = q.front();
+		q.pop();
+		print(top);
+		if (node[top].left != -1) q.push(node[top].left);
+		if (node[top].right != -1) q.push(node[top].right);
+	}
+}
+
+void inOrder(int root) {
+	if (root == -1) {
+		return;
+	}
+	inOrder(node[root].left);
+	print(root);
+	inOrder(node[root].right);
+}
+
+int main() {
+	char left, right;
+	scanf("%d", &n);
+	for (int i = 0;i < n;i++) {
+		getchar();
+		scanf("%c %c", &left, &right);
+		node[i].left = strToNum(left);
+		node[i].right = strToNum(right);
+	}
+	int root = find();
+	postOrder(root);
+	BFS(root);
+	num = 0;
+	inOrder(root);
+	return 0;
+}
