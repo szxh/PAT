@@ -1,0 +1,44 @@
+#include <cstdio>
+#include <vector>
+#include <cmath>
+using namespace std;
+const int maxn = 100010;
+struct Node {
+	int data;
+	vector<int> child;
+}node[maxn];
+
+double sale = 0.0;
+double p, r;
+
+void DFS(int root, int depth) {
+	if (node[root].child.size() == 0) {
+		sale += node[root].data * p * pow(1 + r, depth);
+		return;
+	}
+	for (int i = 0;i < node[root].child.size();i++) {
+		DFS(node[root].child[i], depth + 1);
+	}
+}
+
+int main() {
+	int n, m, son;
+	
+	scanf("%d %lf %lf", &n, &p, &r);
+	r /= 100;
+	for (int i = 0;i < n;i++) {
+		scanf("%d", &m);
+		if (m == 0) {
+			scanf("%d", &node[i].data);
+		}
+		else {
+			for (int j = 0;j < m;j++) {
+				scanf("%d", &son);
+				node[i].child.push_back(son);
+			}
+		}
+	}
+	DFS(0, 0);
+	printf("%.1f", sale);
+	return 0;
+}
