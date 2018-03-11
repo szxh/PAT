@@ -1,0 +1,56 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+using namespace std;
+const int maxn = 105;
+struct Node {
+	int weight;
+	vector<int> child;
+}node[maxn];
+
+bool cmp(int a, int b) {
+	return node[a].weight > node[b].weight;
+}
+
+int path[maxn];
+int s;
+
+void DFS(int index, int numpath, int sum) {
+	if (sum > s) return;
+	if (sum == s) {
+		if (node[index].child.size() == 0) {
+			printf("%d", node[0].weight);
+			for (int i = 1;i < numpath;i++) {
+				printf(" %d", node[path[i]].weight);
+				if (i == numpath - 1) printf("\n");
+			}
+			return;
+		}
+		else return;
+	}
+	for (int i = 0;i < node[index].child.size();i++) {
+		int child = node[index].child[i];
+		path[numpath] = child;
+		DFS(child, numpath + 1, sum + node[child].weight);
+	}
+}
+
+int main() {
+	int n, m;
+	scanf("%d %d %d", &n, &m, &s);
+	for (int i = 0;i < n;i++) {
+		scanf("%d", &node[i].weight);
+	}
+	int id, k, num;
+	for (int i = 0;i < m;i++) {
+		scanf("%d %d", &id, &k);
+		for (int j = 0;j < k;j++) {
+			scanf("%d", &num);
+			node[id].child.push_back(num);
+		}
+		sort(node[id].child.begin(), node[id].child.end(), cmp);
+	}
+	path[0] = 0;
+	DFS(0, 1, node[0].weight);
+	return 0;
+}
