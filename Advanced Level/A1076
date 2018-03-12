@@ -1,0 +1,60 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <queue>
+using namespace std;
+const int maxn = 1010;
+struct node {
+	int id;
+	int layer;
+};
+bool inq[maxn] = { false };
+vector<node> G[maxn];
+int L;
+int BFS(int u) {
+	int ct = 0;
+	node user;
+	user.id = u;
+	user.layer = 0;
+	queue<node> q;
+	q.push(user);
+	inq[u] = true;
+	while (!q.empty()) {
+		node top = q.front();
+		q.pop();
+		int id = top.id;
+		for (int i = 0;i < G[id].size();i++) {
+			node next = G[id][i];
+			next.layer = top.layer + 1;
+			if (inq[next.id] == false && next.layer <= L) {
+				q.push(next);
+				inq[next.id] = true;
+				ct++;
+			}
+		}
+	}
+	return ct;
+}
+
+int main() {
+	int n, k, id;
+	node user;
+	scanf("%d %d", &n, &L);
+	for (int i = 1;i <= n;i++) {
+		user.id = i;
+		scanf("%d", &k);
+		for (int j = 0;j < k;j++) {
+			scanf("%d", &id);
+			G[id].push_back(user);
+		}
+	}
+	int query;
+	scanf("%d", &query);
+	for (int i = 0;i < query;i++) {
+		fill(inq, inq + maxn, false);
+		scanf("%d", &id);
+		int num = BFS(id);
+		printf("%d\n", num);
+	}
+	return 0;
+}
