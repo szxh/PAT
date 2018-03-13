@@ -1,0 +1,64 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+const int INF = 1000000;
+int weight[505];
+int G[505][505];
+int d[505];
+int w[505];
+int num[505];
+int n, m, st, ed;
+bool vis[505] = { false };
+
+void Dijkstra(int s) {
+	fill(d, d + 505, INF);
+	memset(num, 0, sizeof(num));
+	memset(w, 0, sizeof(w));
+	d[s] = 0;
+	w[s] = weight[s];
+	num[s] = 1;
+	for (int i = 0;i < n;i++) {
+		int u = -1, min = INF;
+		for (int j = 0;j < n;j++) {
+			if (vis[j] == false && d[j] < min) {
+				u = j;
+				min = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0;v < n;v++) {
+			if (vis[v] == false && G[u][v] != INF) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+					w[v] = w[u] + weight[v];
+					num[v] = num[u];
+				}
+				else if (d[v] == d[u] + G[u][v]) {
+					if (w[u] + weight[v] > w[v]) {
+						w[v] = w[u] + weight[v];
+					}
+					num[v] += num[u];
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	int a, b, len;
+	scanf("%d %d %d %d", &n, &m, &st, &ed);
+	fill(G[0], G[0] + 505*505, INF);
+	for (int i = 0;i < n;i++) {
+		scanf("%d", &weight[i]);
+	}
+	for (int i = 0;i < m;i++) {
+		scanf("%d %d %d", &a, &b, &len);
+		G[a][b] = len;
+		G[b][a] = len;
+	}
+	Dijkstra(st);
+	printf("%d %d", num[ed], w[ed]);
+	return 0;
+}
