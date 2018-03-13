@@ -1,0 +1,81 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <vector>
+using namespace std;
+const int maxn = 510;
+const int INF = 10000000;
+int G[maxn][maxn], V[maxn][maxn];//边权（距离，花费）
+bool vis[maxn] = { false };
+int optValue = INF;//最小花费
+int d[maxn];//起点到每个点的最短距离
+vector<int> path, temp, pre[100000];
+int n;
+int m, st, ed, a, b, dis, cost;
+
+void dij(int s) {
+	fill(d, d + maxn, INF);
+	d[s] = 0;
+	for (int i = 0;i < n;i++) {
+		int u = -1, MIN = INF;
+		for (int j = 0;j < n;j++) {
+			if (vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0;v < n;v++) {
+			if (vis[v] == false && G[u][v] != INF) {
+				if (d[v] > d[u] + G[u][v]) {
+					d[v] = d[u] + G[u][v];
+					pre[v].clear();
+					pre[v].push_back(u);
+				}
+				else if (d[v] == d[u] + G[u][v]) {
+					pre[v].push_back(u);
+				}
+			}
+		}
+	}
+}
+
+void DFS(int v) {
+	if (v == st) {
+		temp.push_back(v);
+		int value = 0;
+		for (int i = temp.size()-1;i > 0;i--) {
+			value += V[temp[i]][temp[i-1]];
+		}
+		if (value < optValue) {
+			optValue = value;
+			path = temp;
+		}
+		temp.pop_back();
+		return;
+	}
+	temp.push_back(v);
+	for (int i = 0;i < pre[v].size();i++) {
+		DFS(pre[v][i]);
+	}
+	temp.pop_back();
+}
+
+int main() {
+	scanf("%d %d %d %d", &n, &m, &st, &ed);
+	fill(G[0], G[0] + maxn*maxn, INF);
+	fill(V[0], V[0] + maxn*maxn, INF);
+	for (int i = 0;i < m;i++) {
+		scanf("%d %d %d %d", &a, &b, &dis, &cost);
+		G[a][b] = G[b][a] = dis;
+		V[a][b] = V[b][a] = cost;
+	}
+	dij(st);
+	DFS(ed);
+	for (int i = path.size() - 1;i >= 0;i--) {
+		printf("%d ", path[i]);
+	}
+	printf("%d %d", d[ed], optValue);
+	return 0;
+}
