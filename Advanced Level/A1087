@@ -1,0 +1,112 @@
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+#include <map>
+#include <iostream>
+#include <string>
+#include <cstring>
+using namespace std;
+const int maxn = 210;
+const int INF = 10000000;
+
+int cost[maxn][maxn];//边权
+int d[maxn];//起点到每个点最短花费
+vector<int> temp, path, pre[maxn];
+int weight[maxn];//点权
+int maxw = 0;
+double maxavr = 0;
+int n, k;
+int numR = 0;
+map<string, int>ctn;
+map<int, string>ntc;
+bool vis[maxn] = { false };
+
+void dij(int s) {
+	fill(d, d + maxn, INF);
+	d[s] = 0;
+	for (int i = 0;i < n;i++) {
+		int u = -1, min = INF;
+		for (int j = 0;j < n;j++) {
+			if (vis[j] == false && d[j] < min) {
+				u = j;
+				min = d[u];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0;v < n;v++) {
+			if (vis[v] == false && cost[u][v]) {
+				if (d[u] + cost[u][v] < d[v]) {
+					d[v] = d[u] + cost[u][v];
+					pre[v].clear();
+					pre[v].push_back(u);
+
+				}
+				else if (d[u] + cost[u][v] == d[v]) {
+					pre[v].push_back(u);
+				}
+			}
+		}
+	}
+}
+
+void DFS(int v) {
+	if (v == 0) {
+		temp.push_back(v);
+		numR++;
+		int tempw = 0;
+		for (int i = temp.size() - 2;i >=0;i--) {
+			tempw += weight[temp[i]];
+		}
+		double tempavr = 1.0 * tempw / (temp.size() - 1);
+		if (tempw > maxw) {
+			maxw = tempw;
+			maxavr = tempavr;
+			path = temp;
+		}
+		else if (tempw == maxw) {
+			if (tempavr > maxavr) {
+				maxavr = tempavr;
+				path = temp;
+			}
+		}
+		temp.pop_back();
+		return;
+	}
+	temp.push_back(v);
+	for (int i = 0;i < pre[v].size();i++) {
+		DFS(pre[v][i]);
+	}
+	temp.pop_back();
+}
+
+int main() {
+	string st, s;
+	cin >> n >> k >> st;
+	ctn[st] = 0;
+	ntc[0] = st;
+	for (int i = 1;i <= n - 1;i++) {
+		cin >> s >> weight[i];
+		ctn[s] = i;
+		ntc[i] = s;
+	}
+	fill(cost[0], cost[0] + maxn, INF);
+	int ed = ctn["ROM"];
+	string s1, s2;
+	for (int i = 0;i < k;i++) {
+		cin >> s1 >> s2;
+		int a = ctn[s1], b = ctn[s2];
+		cin >> cost[a][b];
+		cost[b][a] = cost[a][b];
+	}
+	dij(0);
+	DFS(ed);
+	printf("%d %d %d %d\n", numR, d[ed], maxw, (int)maxavr);
+	for (int i = path.size() - 1;i >= 0;i--) {
+		int p = path[i];
+		string str = ntc[p];
+		cout << str;
+		if (i != 0) printf("->");
+	}
+	return 0;
+}
