@@ -1,0 +1,99 @@
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <string>
+using namespace std;
+const int maxn = 1015;
+const int INF = 1000000;
+int G[maxn][maxn];
+int d[maxn];
+bool vis[maxn] = { false };
+int n, m, k, ds;
+
+int getid(string s) {
+	int id = 0;
+	if (s[0] == 'G') {
+		if (s.size() == 2) id = n + (s[1] - '0');
+		else id = n + 10;
+	}
+	else {
+		for (int i = 0;i < s.size();i++) {
+			id = id * 10 + (s[i]-'0');
+		}
+	}
+	return id;
+}
+
+void dij(int s) {
+	fill(d, d + maxn, INF);
+	fill(vis, vis + maxn, false);
+	d[s] = 0;
+	for (int i = 1;i <= n+m;i++) {
+		int u = -1, min = INF;
+		for (int j = 1;j <= n + m;j++) {
+			if (vis[j] == false && d[j] < min) {
+				u = j;
+				min = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 1; v <= n + m;v++) {
+			if (vis[v] == false && G[u][v] != INF) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	scanf("%d %d %d %d", &n, &m, &k, &ds);
+	fill(G[0], G[0] + maxn*maxn, INF);
+	string s1, s2;
+	int dist;
+	for (int i = 1;i <= k;i++) {
+		cin >> s1 >> s2 >> dist;
+		int p1 = getid(s1);
+		int p2 = getid(s2);
+		G[p1][p2] = G[p2][p1] = dist;
+	}
+
+	
+	int ansDist = -1;//距离最近的房子的最大距离
+	int ansSum = INF;
+	int ansid = -1;
+	for (int i = n+1;i <= n + m;i++) {
+		int minDist = INF, sum = 0;
+		dij(i);
+		for (int j = 1;j <= n;j++) {
+			if (d[j] > ds) {
+				minDist = -1;
+				break;
+			}
+			sum += d[j];
+			if (d[j] < minDist) {
+				minDist = d[j];
+			}
+		}
+		if (minDist == -1) continue;
+		if (minDist > ansDist) {
+			ansDist = minDist;
+			ansSum = sum;
+			ansid = i;
+		}
+		else if (minDist == ansDist && sum < ansSum) {
+			ansSum = sum;
+			ansid = i;
+		}
+	}
+	if (ansid == -1) {
+		printf("No Solution\n");
+	}
+	else {
+		printf("G%d\n", ansid - n);
+		printf("%.1f %.1f", 1.0 * ansDist, 1.0 * ansSum / n);
+	}
+	return 0;
+}
