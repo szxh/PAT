@@ -1,0 +1,51 @@
+#include <cstdio>
+#include <vector>
+using namespace std;
+
+const int maxn = 510;
+vector<int> G[maxn];
+bool vis[maxn] = { false };
+
+void dfs(int v) {
+	vis[v] = true;
+	for (int i = 0;i < G[v].size();i++) {
+		if (vis[G[v][i]] == false) {
+			dfs(G[v][i]);
+		}
+	}
+}
+
+int main() {
+	int n, m;
+	scanf("%d %d", &n, &m);
+	int a, b;
+	for (int i = 0;i < m;i++) {
+		scanf("%d %d", &a, &b);
+		G[a].push_back(b);
+		G[b].push_back(a);
+	}
+	int block = 0;
+	for (int i = 1;i <= n;i++) {
+		if (vis[i] == false) {
+			dfs(i);
+			block++;
+		}
+	}
+	int oddNum = 0;
+	for (int i = 1;i <= n;i++) {
+		printf("%d", G[i].size());
+		if (G[i].size() % 2 != 0) oddNum++;
+		if (i != n) printf(" ");
+		else printf("\n");
+	}
+	if (oddNum == 0 && block == 1) {
+		printf("Eulerian");
+	}
+	else if (oddNum == 2 && block == 1) {
+		printf("Semi-Eulerian");
+	}
+	else {
+		printf("Non-Eulerian");
+	}
+	return 0;
+}
